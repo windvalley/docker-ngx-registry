@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+
+  nginx:
+    # Note : Only nginx:alpine supports bcrypt.
+    # If you don't need to use bcrypt, you can use a different tag.
+    # Ref. https://github.com/nginxinc/docker-nginx/issues/29
+    image: "nginx:alpine"
+    networks:
+      - net1
+    ports:
+      - 443:443
+    volumes:
+      - ./auth:/etc/nginx/conf.d
+      - ./auth/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs:/var/log/nginx
+    depends_on:
+      - registry
+
+
+  registry:  # 已默认暴露5000端口
+    image: registry:2
+    networks:
+      - net1
+    volumes:
+      - ./data:/var/lib/registry
+
+networks:
+  net1:
